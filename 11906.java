@@ -27,8 +27,8 @@ public class Main {
     static PrintWriter pw;
     static StringTokenizer st;
     static int noRows, noCols, m, n, noEvens, noOdds;
-//    static boolean[][] blocked;
-    static HashSet<Pair> blocked;
+    static boolean[][] blocked;
+//    static HashSet<Pair> blocked;
 
     public static void main(String[] args) throws Exception {
 
@@ -65,8 +65,8 @@ public class Main {
 //        HashSet<Pair> visited = new HashSet<>();
         while (!queue.isEmpty()) {
             Pair p = queue.pollFirst();
-//            visited.add(p);
-            blocked.add(p);
+            blocked[p.r][p.c] = true;
+//            blocked.add(p);
 //            System.out.println("(" + p.r + " " + p.c + ")");
             adjVertices = new HashSet<>();
             for (int i = -1; i < 2; i++) {
@@ -75,15 +75,15 @@ public class Main {
                         Pair pos;
                         if ((pos = getPos (p, m, n, i, j)) != null) {
                             if (adjVertices.add(pos)
-//                                    && !visited.contains(pos)) {
-                                    && !blocked.contains(pos)) {
+                                    && !blocked[pos.r][pos.c]) {
+//                                    && !blocked.contains(pos)) {
                                 queue.addLast(pos);
                             }
                         }
                         if ((pos = getPos(p, n, m, j, i)) != null) {
                             if (adjVertices.add(pos)
-//                                    && !visited.contains(pos)) {
-                                    && !blocked.contains(pos)) {
+                                    && !blocked[pos.r][pos.c]) {
+//                                    && !blocked.contains(pos)) {
                                 queue.addLast(pos);
                             }
                         }
@@ -102,8 +102,8 @@ public class Main {
         int r = p.r + i * moveR;
         int c = p.c + j * moveC;
         if (r < 0 || r >= noRows || c < 0 || c >= noCols
-//                || blocked[r][c]) {
-                || blocked.contains(new Pair(r, c))) {
+                || blocked[r][c]) {
+//                || blocked.contains(new Pair(r, c))) {
 //            System.out.println("(" + r + " " + c + ") is not valid");
             return null;
         }
@@ -114,8 +114,8 @@ public class Main {
         st = new StringTokenizer(br.readLine());
         noRows = Integer.parseInt(st.nextToken());
         noCols = Integer.parseInt(st.nextToken());
-//        blocked = new boolean[noRows][noCols];
-        blocked = new HashSet<>();
+        blocked = new boolean[noRows][noCols];
+//        blocked = new HashSet<>();
         m = Integer.parseInt(st.nextToken());
         n = Integer.parseInt(st.nextToken());
         int noBlockedCells = Integer.parseInt(br.readLine());
@@ -123,8 +123,8 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             int r = Integer.parseInt(st.nextToken());
             int c = Integer.parseInt(st.nextToken());
-//            blocked[r][c] = true;
-            blocked.add(new Pair(r, c));
+            blocked[r][c] = true;
+//            blocked.add(new Pair(r, c));
         }
     }
 }
