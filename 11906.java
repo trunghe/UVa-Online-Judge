@@ -9,12 +9,14 @@
  *              0 <= M,N <= 50, M + N > 0). There are W cells(0 ≤ W < R∗C) that
  *              are blocked.
  * Catergory: Graph
- * Solution: (giving incorrect result, see test case after the code) dfs
- * Issues: Wrong Answer!
+ * Solution: dfs
+ * Issues:
  * Author: Vu Thanh Trung
  */
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.StringTokenizer;
 
@@ -25,11 +27,13 @@ public class Main {
     static StringTokenizer st;
     static int noRows, noCols, m, n, noEvens, noOdds;
     static boolean[][] blocked;
+    static boolean[][] visited;
+    static HashSet<Pair> moves;
 
     public static void main(String[] args) throws Exception {
 
-        System.setIn(new FileInputStream("input.txt"));
-        System.setOut(new PrintStream("output.txt"));
+//        System.setIn(new FileInputStream("input.txt"));
+//        System.setOut(new PrintStream("output.txt"));
 
         br = new BufferedReader(new InputStreamReader(System.in));
         pw = new PrintWriter(new BufferedOutputStream(System.out));
@@ -37,6 +41,9 @@ public class Main {
         int noTcs = Integer.parseInt(br.readLine());
         for (int i = 1; i <= noTcs; i++) {
             input();
+            noEvens = 0;
+            noOdds = 0;
+            visited = new boolean[noRows][noCols];
             dfs(new Pair(0, 0));
             output(i);
         }
@@ -54,24 +61,16 @@ public class Main {
     }
 
     static void dfs(Pair p) {
-        blocked[p.r][p.c] = true;
+        visited[p.r][p.c] = true;
         int noAdjCells = 0;
-        for (int i = -1; i < 2; i++) {
-            for (int j = -1; j < 2; j++) {
-                if (i != 0 && j != 0) {
-                    Pair pos;
-                    if ((pos = getPos (p, m, n, i, j)) != null) {
-                        noAdjCells++;
-                        if (!blocked[pos.r][pos.c]) {
-                            dfs(pos);
-                        }
-                    }
-                    if ((pos = getPos(p, n, m, j, i)) != null) {
-                        noAdjCells++;
-                        if (!blocked[pos.r][pos.c]) {
-                            dfs(pos);
-                        }
-                    }
+        ArrayList<Pair> adj = new ArrayList<>();
+        for (Pair move : moves) {
+            Pair pos;
+            if ((pos = getPos(p, move)) != null) {
+                adj.add(pos);
+                noAdjCells++;
+                if (!visited[pos.r][pos.c]) {
+                    dfs(pos);
                 }
             }
         }
@@ -83,11 +82,10 @@ public class Main {
     }
 
 
-    private static Pair getPos(Pair p, int moveR, int moveC, int i, int j) {
-        int r = p.r + i * moveR;
-        int c = p.c + j * moveC;
-        if (r < 0 || r >= noRows || c < 0 || c >= noCols
-                || blocked[r][c]) {
+    private static Pair getPos(Pair p, Pair move) {
+        int r = p.r + move.r;
+        int c = p.c + move.c;
+        if (r < 0 || r >= noRows || c < 0 || c >= noCols || blocked[r][c]) {
             return null;
         }
         return new Pair(r, c);
@@ -106,6 +104,15 @@ public class Main {
             int r = Integer.parseInt(st.nextToken());
             int c = Integer.parseInt(st.nextToken());
             blocked[r][c] = true;
+        }
+        moves = new HashSet();
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                if (i != 0 && j != 0) {
+                    moves.add(new Pair(i * m, j * n));
+                    moves.add(new Pair(i * n, j * m));
+                }
+            }
         }
     }
 }
@@ -129,11 +136,12 @@ class Pair {
 
     @Override
     public int hashCode() {
+
         return Objects.hash(r, c);
     }
 }
 
-/* Test (time limit):
+/* Test input:
 1
 86 98 23 19
 17
@@ -157,7 +165,4 @@ class Pair {
  */
 /* Correct output:
 Case 1: 3873 334
- */
-/* My output:
-Case 1: 1053 3154
  */
