@@ -9,15 +9,12 @@
  *              0 <= M,N <= 50, M + N > 0). There are W cells(0 ≤ W < R∗C) that
  *              are blocked.
  * Catergory: Graph
- * Solution: (not working within time limit 1 second, see test case after the code)
- *          bfs
- * Issues: Time Limit Exceeded!
+ * Solution: (giving incorrect result, see test case after the code) dfs
+ * Issues: Wrong Answer!
  * Author: Vu Thanh Trung
  */
 
 import java.io.*;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Objects;
 import java.util.StringTokenizer;
 
@@ -28,12 +25,11 @@ public class Main {
     static StringTokenizer st;
     static int noRows, noCols, m, n, noEvens, noOdds;
     static boolean[][] blocked;
-//    static HashSet<Pair> blocked;
 
     public static void main(String[] args) throws Exception {
 
-//        System.setIn(new FileInputStream("input.txt"));
-//        System.setOut(new PrintStream("output.txt"));
+        System.setIn(new FileInputStream("input.txt"));
+        System.setOut(new PrintStream("output.txt"));
 
         br = new BufferedReader(new InputStreamReader(System.in));
         pw = new PrintWriter(new BufferedOutputStream(System.out));
@@ -41,7 +37,7 @@ public class Main {
         int noTcs = Integer.parseInt(br.readLine());
         for (int i = 1; i <= noTcs; i++) {
             input();
-            solve();
+            dfs(new Pair(0, 0));
             output(i);
         }
         pw.close();
@@ -57,54 +53,41 @@ public class Main {
         pw.println();
     }
 
-    private static void solve() {
-        noEvens = noOdds = 0;
-        HashSet<Pair> adjVertices;
-        LinkedList<Pair> queue = new LinkedList<>();
-        queue.addLast(new Pair(0, 0));
-//        HashSet<Pair> visited = new HashSet<>();
-        while (!queue.isEmpty()) {
-            Pair p = queue.pollFirst();
-            blocked[p.r][p.c] = true;
-//            blocked.add(p);
-//            System.out.println("(" + p.r + " " + p.c + ")");
-            adjVertices = new HashSet<>();
-            for (int i = -1; i < 2; i++) {
-                for (int j = -1; j < 2; j++) {
-                    if (i != 0 && j != 0) {
-                        Pair pos;
-                        if ((pos = getPos (p, m, n, i, j)) != null) {
-                            if (adjVertices.add(pos)
-                                    && !blocked[pos.r][pos.c]) {
-//                                    && !blocked.contains(pos)) {
-                                queue.addLast(pos);
-                            }
+    static void dfs(Pair p) {
+        blocked[p.r][p.c] = true;
+        int noAdjCells = 0;
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                if (i != 0 && j != 0) {
+                    Pair pos;
+                    if ((pos = getPos (p, m, n, i, j)) != null) {
+                        noAdjCells++;
+                        if (!blocked[pos.r][pos.c]) {
+                            dfs(pos);
                         }
-                        if ((pos = getPos(p, n, m, j, i)) != null) {
-                            if (adjVertices.add(pos)
-                                    && !blocked[pos.r][pos.c]) {
-//                                    && !blocked.contains(pos)) {
-                                queue.addLast(pos);
-                            }
+                    }
+                    if ((pos = getPos(p, n, m, j, i)) != null) {
+                        noAdjCells++;
+                        if (!blocked[pos.r][pos.c]) {
+                            dfs(pos);
                         }
                     }
                 }
             }
-            if (adjVertices.size() % 2 != 1) {
-                noEvens++;
-            } else {
-                noOdds++;
-            }
+        }
+        if (noAdjCells % 2 != 1) {
+            noEvens++;
+        } else {
+            noOdds++;
         }
     }
+
 
     private static Pair getPos(Pair p, int moveR, int moveC, int i, int j) {
         int r = p.r + i * moveR;
         int c = p.c + j * moveC;
         if (r < 0 || r >= noRows || c < 0 || c >= noCols
                 || blocked[r][c]) {
-//                || blocked.contains(new Pair(r, c))) {
-//            System.out.println("(" + r + " " + c + ") is not valid");
             return null;
         }
         return new Pair(r, c);
@@ -115,7 +98,6 @@ public class Main {
         noRows = Integer.parseInt(st.nextToken());
         noCols = Integer.parseInt(st.nextToken());
         blocked = new boolean[noRows][noCols];
-//        blocked = new HashSet<>();
         m = Integer.parseInt(st.nextToken());
         n = Integer.parseInt(st.nextToken());
         int noBlockedCells = Integer.parseInt(br.readLine());
@@ -124,7 +106,6 @@ public class Main {
             int r = Integer.parseInt(st.nextToken());
             int c = Integer.parseInt(st.nextToken());
             blocked[r][c] = true;
-//            blocked.add(new Pair(r, c));
         }
     }
 }
@@ -176,4 +157,7 @@ class Pair {
  */
 /* Correct output:
 Case 1: 3873 334
+ */
+/* My output:
+Case 1: 1053 3154
  */
